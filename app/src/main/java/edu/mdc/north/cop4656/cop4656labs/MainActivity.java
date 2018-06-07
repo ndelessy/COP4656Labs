@@ -8,8 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "ANDROID LIFECYCLE ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,37 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        Log.d(TAG, "In the onCreate() method");
+    }
+
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "In the onStart() method");
+    }
+
+    public void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "In the onRestart() method");
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "In the onResume() method");
+    }
+
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "In the onPause() method");
+    }
+
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "In the onStop() method");
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "In the onDestroy() method");
     }
 
     @Override
