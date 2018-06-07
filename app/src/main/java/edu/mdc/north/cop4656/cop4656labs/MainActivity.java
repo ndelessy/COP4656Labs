@@ -13,6 +13,8 @@ import android.util.Log;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "ANDROID LIFECYCLE ";
 
+    private static final String INT_TO_BE_SAVED = "Description of the int to be saved";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Log.d(TAG, "In the onCreate() method");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        // Save the int in a bundle
+        outState.putInt(INT_TO_BE_SAVED, 3);
+        Log.d(TAG, "Saved in Bundle: " + outState.getInt(INT_TO_BE_SAVED) );
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        Log.d(TAG, "Restored from bundle: " + savedInstanceState.getInt(INT_TO_BE_SAVED) );
     }
 
     public void onStart() {
