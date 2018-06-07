@@ -1,5 +1,6 @@
 package edu.mdc.north.cop4656.cop4656labs;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -104,5 +105,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void go2ButtonClicked(View view){
+        Intent intent = new Intent(this, SecondActivity.class);
+        intent.putExtra("SCORE", 34543);
+        startActivity(intent);
     }
 }
