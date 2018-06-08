@@ -9,6 +9,7 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
+        style="@style/AppTheme.BoldRed"
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
