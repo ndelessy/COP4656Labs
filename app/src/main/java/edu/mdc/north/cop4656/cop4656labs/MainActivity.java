@@ -1,17 +1,25 @@
 package edu.mdc.north.cop4656.cop4656labs;
 
+import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements BlankFragment.OnFragmentInteractionListener
+    , MyDialogFragment.OnMyDialogConfirmedListener {
     private static final String TAG = "ANDROID LIFECYCLE ";
 
     private static final String INT_TO_BE_SAVED = "Description of the int to be saved";
@@ -32,6 +40,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Log.d(TAG, "In the onCreate() method");
+
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) { // in portrait mode
+            BlankFragment fragment = BlankFragment.newInstance("param1", "param2");
+            fragmentTransaction.add(R.id.fragmentContainer, fragment, "BLANK_FRAGMENT_TAG");
+            //Unlike activities, fragments must be explicitly added to the backstack:
+            fragmentTransaction.addToBackStack("BLANK_FRAGMENT_BACKSTACK_TAG");
+            Log.d(TAG, "____________landscape") ;
+        } else {
+            Log.d(TAG, "____________portrait") ;
+            //We cannot reuse the reference created above since the Android system re-creates the fragment for us after a configuration change..
+            BlankFragment fragment =  (BlankFragment) getSupportFragmentManager().findFragmentByTag("BLANK_FRAGMENT_TAG");
+            if(fragment != null) {
+                fragmentTransaction.remove(fragment);
+            }
+        }
+
+        fragmentTransaction.commit();
+
     }
 
     @Override
@@ -108,8 +138,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void go2ButtonClicked(View view){
-        Intent intent = new Intent(this, SecondActivity.class);
+        Intent intent = new Intent(this, Main2Activity.class);
         intent.putExtra("SCORE", 34543);
         startActivity(intent);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.d(TAG, "Communicated with Activity");
+    }
+
+    @Override
+    public void onDialogConfirmed() {
+        Toast.makeText(this, "Action confirmed!!!!!!", Toast.LENGTH_LONG).show();
+    }
+
+    public void showDialog(View view) {
+        MyDialogFragment newFragment = MyDialogFragment.newInstance();
+        newFragment.show(getSupportFragmentManager(), "confirmDeleteArtPiece");
     }
 }
