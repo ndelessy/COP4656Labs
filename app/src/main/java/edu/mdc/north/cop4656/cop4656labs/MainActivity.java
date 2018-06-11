@@ -19,7 +19,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements BlankFragment.OnFragmentInteractionListener
-    , MyDialogFragment.OnMyDialogConfirmedListener {
+    , MyDialogFragment.OnMyDialogConfirmedListener
+   , SignInDialogFragment.OnCredentialEnteredListener {
     private static final String TAG = "ANDROID LIFECYCLE ";
 
     private static final String INT_TO_BE_SAVED = "Description of the int to be saved";
@@ -155,6 +156,26 @@ public class MainActivity extends AppCompatActivity
 
     public void showDialog(View view) {
         MyDialogFragment newFragment = MyDialogFragment.newInstance();
-        newFragment.show(getSupportFragmentManager(), "confirmDeleteArtPiece");
+        newFragment.show(getSupportFragmentManager(), "showBasicDialog");
+    }
+
+    public void showDatePickerDialog(View view) {
+        MyDatePickerDialogFragment newFragment = MyDatePickerDialogFragment.newInstance();
+        newFragment.show(getSupportFragmentManager(), "showDatePickerDialog");
+    }
+
+    public void signInDialog(View view) {
+        SignInDialogFragment newFragment = SignInDialogFragment.newInstance();
+        newFragment.show(getSupportFragmentManager(), "signInDialog");
+    }
+
+    @Override
+    public void authenticate(String username, String password) {
+        if(username.equals("admin") && password.equals("nimda")){
+            Toast.makeText(this, "Authenticated", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Wrong username and/or password", Toast.LENGTH_LONG).show();
+        }
+
     }
 }
