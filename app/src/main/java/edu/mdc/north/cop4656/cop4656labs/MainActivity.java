@@ -1,7 +1,9 @@
 package edu.mdc.north.cop4656.cop4656labs;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,17 +13,28 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity
         implements BlankFragment.OnFragmentInteractionListener
     , MyDialogFragment.OnMyDialogConfirmedListener
    , SignInDialogFragment.OnCredentialEnteredListener {
     private static final String TAG = "ANDROID LIFECYCLE ";
+    private static final String prefs = "userPrefs";
+    private static final String FILENAME = "Reminders";
 
     private static final String INT_TO_BE_SAVED = "Description of the int to be saved";
 
@@ -65,6 +78,28 @@ public class MainActivity extends AppCompatActivity
         }
 
         fragmentTransaction.commit();
+
+        //Reading from file
+        FileInputStream fin = null;
+        BufferedReader bufferedReader = null;
+        StringBuilder temp = new StringBuilder();
+        try {
+            fin = openFileInput(FILENAME);
+            bufferedReader = new BufferedReader(new InputStreamReader(fin));
+            String line;
+            while( (line = bufferedReader.readLine()) != null){
+                temp.append(line).append("\n");
+            }
+            bufferedReader.close();
+            fin.close();
+            Toast toast = Toast.makeText(this, "Reminder:\n" + temp.toString(), Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -168,17 +203,56 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void signInDialog(View view) {
-        SignInDialogFragment newFragment = SignInDialogFragment.newInstance();
-        newFragment.show(getSupportFragmentManager(), "signInDialog");
+        //Reading from shared preferences
+        SharedPreferences sharedPref = this.getSharedPreferences(prefs, Context.MODE_PRIVATE);
+        //Reading the username from the shared preferences
+        String  savedUserName = sharedPref.getString("userName", null);
+        if(savedUserName == null){
+            SignInDialogFragment newFragment = SignInDialogFragment.newInstance();
+            newFragment.show(getSupportFragmentManager(), "signInDialog");
+        } else {
+            sayHello(savedUserName);
+        }
+
+    }
+
+    private void sayHello(String userName) {
+        Toast toast = Toast.makeText(this, "Hello " + userName + "!", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.TOP, 10, 10);
+        toast.show();
     }
 
     @Override
     public void authenticate(String username, String password) {
         if(username.equals("admin") && password.equals("nimda")){
             Toast.makeText(this, "Authenticated", Toast.LENGTH_LONG).show();
+
+            //Writing to shared preferences
+            SharedPreferences sharedPref = this.getSharedPreferences(prefs, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("userName", username);
+            editor.commit();
+
+            sayHello(username);
+
         } else {
             Toast.makeText(this, "Wrong username and/or password", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    public void addReminder(View view) {
+        //Writing to file
+        EditText reminderText = (EditText) findViewById(R.id.reminderText);
+        FileOutputStream outputStream;
+        try {
+            outputStream = openFileOutput(FILENAME, Context.MODE_PRIVATE | Context.MODE_APPEND);
+            outputStream.write(reminderText.getText().toString().concat("\n").getBytes());
+            outputStream.close();
+            Toast.makeText(this, "Reminder added!", Toast.LENGTH_LONG).show();
+            reminderText.setText("");
+        } catch (Exception e) {
+            Log.w("WARNING", "Cannot save reminder..");
+        }
     }
 }
